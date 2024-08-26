@@ -1,0 +1,5 @@
+for each thread:
+-  ask ai via api (e.g. chatgpt) for answer without using elements from "incorrect" answers
+- insert answer
+    - if correct add to list of current "way"
+    - add answer to "incorrect" answers and redo the "way"

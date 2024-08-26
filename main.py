@@ -83,10 +83,7 @@ def main(id):
         input_field.clear()
         input_field.send_keys(word)
         input_field.send_keys(Keys.RETURN)
-        # log_message(f"{word} ", end="", tag="note")
-        # log_message(f"vs ", end="", tag="info")
-        # log_message(f"{last_word}", end=": ", tag="note2")
-        
+
         correct = None
         while True:
 
@@ -115,7 +112,6 @@ def main(id):
             driver.quit()
 
         if correct:
-            # log_message(f"Correct", tag="correct")
             prev_word = word
             button_field.send_keys(Keys.RETURN)
 
@@ -125,7 +121,7 @@ def main(id):
 
     log_message("Ran out of Words", id, tag="warning")
 
-for i in range(1):
+for i in range(10):
     thread = threading.Thread(target=main, args=(i,), daemon=True)
     threads.append(thread)
     thread.start()
