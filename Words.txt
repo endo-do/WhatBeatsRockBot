@@ -1,7 +1,5 @@
 Paper
-Nothing
 Scissor
-Paper
 Hammer
 Saw
 Sword
