@@ -1,0 +1,34 @@
+Paper
+Nothing
+Scissor
+Paper
+Hammer
+Saw
+Sword
+Spear
+Shield
+Rocket Launcher
+Sniper
+Counter Sniper
+Tank
+Anti Tank Mine
+Anti Mine Dog
+Poison
+Medicine
+Magic
+Dark Magic
+Anti Magic
+Time
+Time Machine
+Blackout
+Generator
+Fire
+Water
+Sponge
+Knife
+Machete
+Gun
+Gun Vest
+Bomb
+Defuse Kit
+Artifical Intelligence
