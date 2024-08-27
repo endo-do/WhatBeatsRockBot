@@ -1,4 +1,5 @@
 Paper
+Nothing
 Scissor
 Hammer
 Saw

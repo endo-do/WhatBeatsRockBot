@@ -8,7 +8,8 @@ import pathlib
 import customtkinter as ctk
 import threading
 import time
-
+import openai 
+  
 CHROMEDRIVER_PATH = r"C:\\Users\\anmel\\OneDrive\\Desktop\\chromedriver-win32\\chromedriver.exe"
 WEBSITE_PATH = "https://www.whatbeatsrock.com"
 DIR_PATH = pathlib.Path().resolve()
