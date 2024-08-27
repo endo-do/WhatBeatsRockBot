@@ -1,0 +1,4 @@
+Code Aufräumen:
+    - Unnötiges weglassen
+    - oft gebrauchter code (e.g. user input über console) als funktionen schreiben
+    - kommentieren

@@ -21,8 +21,12 @@ app = ctk.CTk()
 app.geometry("600x400")
 app.title("Terminal")
 
-output_textbox = ctk.CTkTextbox(app, width=600, height=400)
-output_textbox.pack(pady=10, padx=10)
+output_textbox = ctk.CTkTextbox(app, width=600, height=350)
+output_textbox.pack(pady=0, padx=5)
+
+input_entry = ctk.CTkEntry(app, width=600, height=40, placeholder_text="Console: ")
+input_entry.pack(pady=0, padx=5)
+input_entry.bind("<Return>", lambda event: on_enter_press())
 
 output_textbox.tag_config("info", foreground="black")
 output_textbox.tag_config("success", foreground="green")
@@ -39,6 +43,11 @@ def remove_duplicates(list):
             clean_list.append(i)
     
     return clean_list
+
+user_input_comit = threading.Event()
+
+def on_enter_press():
+    user_input_comit.set()
 
 def log_message(msg, id, tag="info", end="\n"):
     output_textbox.insert("end", "Instance "+ str(id) + ": " + msg + end, tag)
@@ -74,26 +83,85 @@ def main(id):
     score = 0
     for index, name in enumerate(names):
 
+        pause = False
+        if user_input_comit.is_set():
+            pause = True
+            while pause:
+                user_input_comit.clear()
+                user_input = input_entry.get()
+                input_entry.delete(0, ctk.END)
+                log_message(f"Captured user Input: '{user_input}'", id, tag="note")
+                if user_input == "pause":    
+                    log_message(f"Pausing Script ...", id, tag="warning")
+                    log_message(f"Type 'continue' to continue", id)
+                    while not user_input_comit.is_set():
+                        time.sleep(0.5)
+                    user_input = input_entry.get()
+                    user_input_comit.clear()
+                    log_message(f"Captured user Input: '{user_input}'", id, tag="note")
+                    input_entry.delete(0, ctk.END)
+                    if user_input == "continue":
+                        log_message("Continuingt the script ...", id, tag="warning")
+                        pause = False
+                        break
+                
+                elif user_input == "quit":
+                    log_message("Quitting programm and all drivers ...", id, tag="error")
+                    time.sleep(1)
+                    driver.quit()
+                    app.quit()
+            
+                else:
+                    pause = False
+                    break
+
         input_field = driver.find_element(By.CSS_SELECTOR, ".pl-4.py-4.text-lg.border.border-1-black")
         input_field.clear()
         input_field.send_keys(name)
         input_field.send_keys(Keys.RETURN)
 
+        alert = None
         try:
             time.sleep(0.5)
             alert = driver.switch_to.alert
             alert_text = alert.text
-            log_message(f"Alert: {alert_text}", id, tag="error")
-            log_message(f"Score: {score}", id)
-            input()
-            service.quit()
+            alert.accept()
 
         except NoAlertPresentException:
             pass
-        
+
+        while alert:
+            user_input_comit.clear()
+            log_message(f"Alert: {alert_text}", id, tag="error")
+            log_message(f"Score: {score}", id)
+            log_message(f"To try to continue the programm type 'continue'", id)
+            log_message(f"To quit type anything", id)
+            while not user_input_comit.is_set():
+                time.sleep(0.5)
+            user_input = input_entry.get()
+            log_message(f"Captured user Input: '{user_input}'", id, tag="note")
+            input_entry.delete(0, ctk.END)
+            if user_input == "continue":
+                log_message("Continuing the programm", id, tag="warning")
+                input_field.send_keys(Keys.RETURN)
+                
+                try:
+                    time.sleep(0.5)
+                    alert = driver.switch_to.alert
+                    alert_text = alert.text
+                    alert.accept()
+
+                except NoAlertPresentException:
+                    alert = None
+            
+            else:
+                log_message("Quitting programm and all drivers ...", id, tag="error")
+                time.sleep(1)
+                driver.quit()
+                app.quit()
+
         correct = None
         while True:
-
             try:
                 button_field = driver.find_element(By.CSS_SELECTOR, ".py-4.px-8.border.border-1-black.text-lg")
                 correct = True
