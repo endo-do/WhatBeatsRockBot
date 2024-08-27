@@ -15,7 +15,6 @@ WEBSITE_PATH = "https://www.whatbeatsrock.com"
 DIR_PATH = pathlib.Path().resolve()
 
 choices = ["paper",  "scissor", "rock"]
-
 threads = []
 
 app = ctk.CTk()
