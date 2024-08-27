@@ -121,7 +121,7 @@ def main(id):
 
     log_message("Ran out of Words", id, tag="warning")
 
-for i in range(1):
+for i in range(10):
     thread = threading.Thread(target=main, args=(i,), daemon=True)
     threads.append(thread)
     thread.start()
