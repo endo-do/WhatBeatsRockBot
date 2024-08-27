@@ -50,12 +50,15 @@ def main(id):
 
     with open(DIR_PATH.joinpath("Names.txt"), "r") as f:
         content = [i.strip("\n") for i in f.readlines()]
+        content = [i.strip(" ") for i in content]
         names = []
         for i in content:
             names.append(f"A Person named {i} plays Paper")
             names.append(f"A Person named {i} plays Scissor")
             names.append(f"A Person named {i} plays Rock")
         log_message("Word List loaded", id, tag="success")
+        for i in names:
+            print(i)
 
     service = Service(executable_path=CHROMEDRIVER_PATH)
 
