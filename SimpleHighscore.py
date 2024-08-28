@@ -13,9 +13,7 @@ import time
 CHROMEDRIVER_PATH = r"C:\\Users\\anmel\\OneDrive\\Desktop\\chromedriver-win32\\chromedriver.exe"
 WEBSITE_PATH = "https://www.whatbeatsrock.com"
 DIR_PATH = pathlib.Path().resolve()
-
-choices = ["paper",  "scissor", "rock"]
-threads = []
+automate = True
 
 app = ctk.CTk()
 app.geometry("600x400")
@@ -44,30 +42,30 @@ def remove_duplicates(list):
     
     return clean_list
 
-user_input_comit = threading.Event()
-
 def on_enter_press():
     user_input_comit.set()
 
-def log_message(msg, id, tag="info", end="\n"):
-    output_textbox.insert("end", "Instance "+ str(id) + ": " + msg + end, tag)
+def log_message(msg, id=1, tag="info", end="\n"):
+    output_textbox.insert("end", "Instance "+ str(id) + f" {time.strftime("%H:%M:%S", time.localtime())}: " + msg + end, tag)
     output_textbox.see("end")
+
+def num_to_id(num):
+    letters = ["a", "b", "e", "d", "u", "f", "o", "t", "i", "s"]
+    id = ""
+    for i in str(num):
+        id += letters[int(i)]
+
+    return id
 
 def main(id):
 
-    id += 1
-
-    with open(DIR_PATH.joinpath("Names.txt"), "r") as f:
-        content = [i.strip("\n") for i in f.readlines()]
-        content = [i.strip(" ") for i in content]
-        names = []
-        for i in content:
-            names.append(f"A Person named {i} plays Paper")
-            names.append(f"A Person named {i} plays Scissor")
-            names.append(f"A Person named {i} plays Rock")
-        log_message("Word List loaded", id, tag="success")
-        for i in names:
-            print(i)
+    names = []
+    
+    for i in range(1000, 2501):
+        names.append(f"A Robot named {num_to_id(i)} plays Paper")
+        names.append(f"A Robot named {num_to_id(i)} plays Scissor")
+        names.append(f"A Robobt named {num_to_id(i)} plays Rock")
+    log_message("Input List Generated", id, tag="success")
 
     service = Service(executable_path=CHROMEDRIVER_PATH)
 
@@ -81,7 +79,7 @@ def main(id):
 
     prev_word = "Rock"
     score = 0
-    for index, name in enumerate(names):
+    for name in names:
 
         pause = False
         if user_input_comit.is_set():
@@ -93,6 +91,7 @@ def main(id):
                 log_message(f"Captured user Input: '{user_input}'", id, tag="note")
                 if user_input == "pause":    
                     log_message(f"Pausing Script ...", id, tag="warning")
+                    log_message(f"Score: {score}", id)
                     log_message(f"Type 'continue' to continue", id)
                     while not user_input_comit.is_set():
                         time.sleep(0.5)
@@ -133,32 +132,43 @@ def main(id):
         while alert:
             user_input_comit.clear()
             log_message(f"Alert: {alert_text}", id, tag="error")
-            log_message(f"Score: {score}", id)
-            log_message(f"To try to continue the programm type 'continue'", id)
-            log_message(f"To quit type anything", id)
-            while not user_input_comit.is_set():
-                time.sleep(0.5)
-            user_input = input_entry.get()
-            log_message(f"Captured user Input: '{user_input}'", id, tag="note")
-            input_entry.delete(0, ctk.END)
-            if user_input == "continue":
-                log_message("Continuing the programm", id, tag="warning")
-                input_field.send_keys(Keys.RETURN)
-                
-                try:
-                    time.sleep(0.5)
-                    alert = driver.switch_to.alert
-                    alert_text = alert.text
-                    alert.accept()
-
-                except NoAlertPresentException:
-                    alert = None
             
+            if alert_text == "rate limit exceeded! slow down or dm us on discord/twitter" and automate:
+                log_message(f"Waiting 1h to wait out rate limit and continue programm afterwards", id, tag="warning")
+                time.sleep(3601)
+                log_message(f"Continuing the programm", id, tag="warning")
+                alert=None
+                break
+
             else:
-                log_message("Quitting programm and all drivers ...", id, tag="error")
-                time.sleep(1)
-                driver.quit()
-                app.quit()
+                
+                log_message(f"Score: {score}", id)
+                log_message(f"To try to continue the programm type 'continue'", id)
+                log_message(f"To quit type anything", id)
+                while not user_input_comit.is_set():
+                    time.sleep(0.5)
+                user_input = input_entry.get()
+                log_message(f"Captured user Input: '{user_input}'", id, tag="note")
+                input_entry.delete(0, ctk.END)
+                if user_input == "continue":
+                    log_message("Continuing the programm", id, tag="warning")
+                    input_field.send_keys(Keys.RETURN)
+                    
+                    try:
+                        time.sleep(0.5)
+                        alert = driver.switch_to.alert
+                        alert_text = alert.text
+                        alert.accept()
+
+                    except NoAlertPresentException:
+                        alert = None
+                        break
+                
+                else:
+                    log_message("Quitting programm and all drivers ...", id, tag="error")
+                    time.sleep(1)
+                    driver.quit()
+                    app.quit()
 
         correct = None
         while True:
@@ -195,9 +205,8 @@ def main(id):
     log_message("Ran out of Words", id, tag="warning")
     log_message(f"Score: {score}", id)
 
-for i in range(1):
-    thread = threading.Thread(target=main, args=(i,), daemon=True)
-    threads.append(thread)
-    thread.start()
+user_input_comit = threading.Event()
+thread = threading.Thread(target=main, args=(1,), daemon=True)
+thread.start()
 
 app.mainloop()
